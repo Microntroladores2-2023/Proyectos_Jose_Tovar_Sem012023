@@ -1,6 +1,11 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+/*
+Programa para mostrar la capacidad de correr diferentes tareas en los 2 nucleos del ESP32,
+ordenandolas por prioridad.
+*/
+
 void Tarea1(void *pvParameters) //Tarea 1
 {
 
