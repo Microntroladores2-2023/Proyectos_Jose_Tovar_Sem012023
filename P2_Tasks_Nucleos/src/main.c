@@ -46,8 +46,8 @@ void app_main()
     //El orden de la prioridad esta  ordenado de forma descendente, es decir
     //La prioridad mas alta coincide con el numero mas alto
 
-    xTaskCreatePinnedToCore(Tarea1, "Task1", 1024 * 2, NULL, 1, NULL, 0); //Se ejecutara en nucleo 0
+    xTaskCreatePinnedToCore(Tarea1, "Task1", 1024 * 2, NULL, 1, NULL, 0); //Se ejecutara en nucleo 0, con prioridad 1
     xTaskCreatePinnedToCore(Tarea2, "Task2", 1024 * 2, NULL, 2, NULL, 1);
-    xTaskCreatePinnedToCore(Tarea3, "Task3", 1024 * 2, NULL, 3, NULL, 0);
+    xTaskCreatePinnedToCore(Tarea3, "Task3", 1024 * 2, NULL, 3, NULL, 0); //Esta tiene mayor prioridad que Task 1
     xTaskCreatePinnedToCore(Tarea4, "Task4", 1024 * 2, NULL, 4, NULL, 1);
 }
