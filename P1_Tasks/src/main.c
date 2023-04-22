@@ -5,7 +5,6 @@
 
 void Tarea1(void *pvParameters) //Creacion de tarea
 {
-
     while(1) // Loop infinito
     {
         printf("Hola Mundo Tarea1 freeRTOS\n\r");
