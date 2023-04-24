@@ -8,7 +8,7 @@
 
 static esp_adc_cal_characteristics_t adc1_chars;
 
-void Tarea1(void *pvParameters) // Esta es una tarea
+void TareaADC(void *pvParameters) // Esta es una tarea
 {
 #define numeroMuestras 128
 
@@ -49,6 +49,6 @@ void Tarea1(void *pvParameters) // Esta es una tarea
 }
 void app_main() {
 
- xTaskCreatePinnedToCore(Tarea1, "Task1", 1024 * 10, NULL, 1, NULL, 0);
+ xTaskCreatePinnedToCore(TareaADC, "TareaADC", 1024 * 10, NULL, 1, NULL, 0);
 
 }
