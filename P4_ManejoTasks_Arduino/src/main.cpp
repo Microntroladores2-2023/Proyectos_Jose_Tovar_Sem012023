@@ -1,9 +1,14 @@
-#include <Arduino.h>
+#include "tareas.h" //
 
-void setup() {
-  // put your setup code here, to run once:
+TaskHandle_t xHandle;
+
+void setup()
+{
+
+  xTaskCreatePinnedToCore(Boton, "Boton", 1024 * 2, NULL, 1, NULL, 0);
+  xTaskCreatePinnedToCore(Blink, "Parpadeo", 1024 * 2, NULL, 1, &xHandle, 0);
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop()
+{
 }
