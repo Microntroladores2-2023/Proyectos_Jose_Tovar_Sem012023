@@ -24,13 +24,14 @@ void TareaEventosUART0(void *Parametro)
 
    while(1)
     {
+        //Si recibo datos por puerto serial
         if (xQueueReceive(uart0_queue, (void *)&evento, (TickType_t)portMAX_DELAY))
         {
             bzero(datoRX, tamBUFFER);
             if (evento.type == UART_DATA)
             {
                 uart_read_bytes(UART_NUM_0, datoRX, evento.size, portMAX_DELAY);
-                protocolo1Serial(datoRX, evento.size);
+                protocolo1Serial(datoRX, evento.size); //Le paso el dato recibido por serial al protocolo
 
                 // uart_write_bytes(UART_NUM_0, (const char*) datoRX, evento.size);
 
@@ -63,7 +64,7 @@ void initUART0()
     xTaskCreatePinnedToCore(TareaEventosUART0, "Tarea_para_UART0", 1024 * 5, NULL, 12, NULL, 1);
 }
 
-void Blink(void *pvParameters) // Esta es una tarea
+void blink(void *pvParameters) // Esta es una tarea
 {
 
 #define LED_PIN 2
@@ -92,7 +93,6 @@ void protocolo1Serial(uint8_t *ByteArray, uint16_t Length)
     switch (estado)
     {
     case 0:
-         vTaskResume(xHandle);
         tiempo_led = 1000; //Se ajusta el tiempo del led
         break;
 
@@ -100,12 +100,13 @@ void protocolo1Serial(uint8_t *ByteArray, uint16_t Length)
         tiempo_led = 2000; //Se ajusta el tiempo del led
         break;
     case 2:
-        tiempo_led = 3000; //Se ajusta el tiempo del led
+        vTaskSuspend(xHandle); //Suspende la tarea de parpadeo de led
+        //tiempo_led = 3000; //Se ajusta el tiempo del led
         break;
 
     case 3:
-        vTaskSuspend(xHandle);
-        //tiempo_led = 5000; //Se ajusta el tiempo del led
+         vTaskResume(xHandle);
+        tiempo_led = 5000; //Se ajusta el tiempo del led
         break;
     }
 }
@@ -113,5 +114,5 @@ void protocolo1Serial(uint8_t *ByteArray, uint16_t Length)
 void app_main(void)
 {
     initUART0();
-    xTaskCreatePinnedToCore(Blink, "Blink", 1024 * 2, NULL, 1, &xHandle, 0);
+    xTaskCreatePinnedToCore(blink, "Blink", 1024 * 2, NULL, 1, &xHandle, 0); //Tarea con manejador
 }
