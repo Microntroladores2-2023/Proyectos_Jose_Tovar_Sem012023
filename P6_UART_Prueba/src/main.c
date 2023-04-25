@@ -4,8 +4,11 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "driver/uart.h"
+#include "driver/gpio.h"
 
 static QueueHandle_t uart0_queue;
+
+TaskHandle_t xHandle; //Handle para manejar la tarea del led
 
 uint16_t tiempo_led = 500; // variable global
 
@@ -60,9 +63,21 @@ void initUART0()
     xTaskCreatePinnedToCore(TareaEventosUART0, "Tarea_para_UART0", 1024 * 5, NULL, 12, NULL, 1);
 }
 
-void app_main()
+void Blink(void *pvParameters) // Esta es una tarea
 {
-    initUART0();
+
+#define LED_PIN 2
+
+    gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
+
+    int ON = 0;
+
+    while (true) // Una tarea nunca regresará ni saldrá
+    {
+        ON = !ON;
+        gpio_set_level(LED_PIN, ON);
+        vTaskDelay(tiempo_led / portTICK_PERIOD_MS);
+    }
 }
 
 //Protocolo Serial creado por usuario
@@ -77,6 +92,7 @@ void protocolo1Serial(uint8_t *ByteArray, uint16_t Length)
     switch (estado)
     {
     case 0:
+         vTaskResume(xHandle);
         tiempo_led = 1000; //Se ajusta el tiempo del led
         break;
 
@@ -88,7 +104,14 @@ void protocolo1Serial(uint8_t *ByteArray, uint16_t Length)
         break;
 
     case 3:
-        tiempo_led = 5000; //Se ajusta el tiempo del led
+        vTaskSuspend(xHandle);
+        //tiempo_led = 5000; //Se ajusta el tiempo del led
         break;
     }
+}
+
+void app_main(void)
+{
+    initUART0();
+    xTaskCreatePinnedToCore(Blink, "Blink", 1024 * 2, NULL, 1, &xHandle, 0);
 }
