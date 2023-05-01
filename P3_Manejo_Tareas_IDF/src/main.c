@@ -8,7 +8,7 @@ uint16_t tiempo_Led = 1000; //Valor inicial global del tiempo de led
 
 void Boton(void *pvParameters)
 {
-#define PUSH_BUTTON_PIN 23
+#define PUSH_BUTTON_PIN 0
 
     uint8_t estado_maquina = 0;
 
@@ -23,32 +23,38 @@ void Boton(void *pvParameters)
         while (gpio_get_level(PUSH_BUTTON_PIN) == 1)
            vTaskDelay(10/portTICK_PERIOD_MS); // Boton sin presionar
 
+        //--------------MAQUINA DE ESTADOS-----------------------------
         switch (estado_maquina)
         {
         case 0:
             tiempo_Led = 100;
             estado_maquina = 1;
+            printf("Estado actual: 1 \n");
             break;
 
         case 1:
             tiempo_Led = 2000;
             estado_maquina = 2;
+            printf("Estado actual: 2 \n");
             break;
 
         case 2:
             vTaskSuspend(xHandle);
             estado_maquina = 3;
+            printf("Estado actual: 3 \n");
             break;
 
         case 3:
             vTaskResume(xHandle);
             tiempo_Led = 50;
             estado_maquina = 4;
+            printf("Estado actual: 4 \n");
             break;
 
         case 4:
             tiempo_Led = 500;
             estado_maquina = 0;
+            printf("Estado actual: 5 \n");
             break;
         }
         vTaskDelay(100/portTICK_PERIOD_MS);
