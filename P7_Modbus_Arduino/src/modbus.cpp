@@ -1,8 +1,7 @@
 #include "modbus.h"
+#include "init_coils.h"
 
 // uint8_t ByteArray[260]; // buffer de recepcion de los datos recibidos de los clientes
-
-//Inicializacion de parametros de la RTU
 UINT16_VAL MBHoldingRegister[maxHoldingRegister];
 UINT16_VAL MBInputRegister[maxInputRegister];
 UINT16_VAL MBCoils;
@@ -12,17 +11,14 @@ UINT16_VAL MBDiscreteInputs;
 //************* Funciones **************
 //**************************************
 
-//ByteArray es lo que recibi
 void modbusSerial(uint8_t *ByteArray, uint16_t Length)
 {
-    uint8_t byteFN = ByteArray[MB_SER_FUNC]; //guardo el byte que identifica que funcion aplicar
-    //UINT_VAL estructura definida
-    UINT16_VAL Start; //Guardando la direccion a la que voy a empezar independientement de la funcion
-    UINT16_VAL WordDataLength; //variable auxiliar de procesamiento 
+    uint8_t byteFN = ByteArray[MB_SER_FUNC]; // maquina de estado
+    UINT16_VAL Start;
+    UINT16_VAL WordDataLength;
 
     UINT16_VAL CRC;
 
-    //Compruebo CRC
     if ((CRC16(ByteArray, Length) == 0) && (ByteArray[MB_SER_UID] == ID_RTU_LOCAL))
     {
 
@@ -100,6 +96,71 @@ void modbusSerial(uint8_t *ByteArray, uint16_t Length)
             break;
 
         case MB_FC_WRITE_COIL: // 05 Write COIL
+            uart_write_bytes(UART_NUM_0, (const char *)ByteArray, 8);
+
+            // direccion de coil
+
+            Start.byte.HB = ByteArray[2];
+            Start.byte.LB = ByteArray[3];
+
+            // Comando encender o apagar Coil
+
+            WordDataLength.byte.HB = ByteArray[4];
+            WordDataLength.byte.LB = ByteArray[5];
+
+            // comprueba una dirección entre 0 y 15
+
+            switch (Start.Val)
+            {
+                // Dirección coil 0
+            case 0:
+                // Comprueba si comando es ON
+                if (WordDataLength.Val == 0xFF00)
+                {
+                    gpio_set_level(C0, 1);
+                    MBCoils.bits.b0 = 1;
+                }
+                // Si no comando OFF
+                else
+                {
+                    gpio_set_level(C0, 0);
+                    MBCoils.bits.b0 = 0;
+                }
+                break;
+
+                // Dirección coil 0
+
+            case 1:
+                if (WordDataLength.Val == 0xFF00)
+                {
+                    gpio_set_level(C1, 1);
+                    MBCoils.bits.b1 = 1;
+                }
+                else
+                {
+                    gpio_set_level(C1, 0);
+                    MBCoils.bits.b1 = 0;
+                }
+                break;
+
+                // Dirección coil 2
+
+            case 2:
+                if (WordDataLength.Val == 0xFF00)
+                {
+                    gpio_set_level(C2, 1);
+                    MBCoils.bits.b2 = 1;
+                }
+                else
+                {
+                    gpio_set_level(C2, 0);
+                    MBCoils.bits.b2 = 0;
+                }
+                break;
+
+            default:
+                break;
+            }
 
             break;
 

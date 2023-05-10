@@ -22,6 +22,7 @@ void TareaADC(void *pvParameters) // Esta es una tarea
     int i = 0;
 
     int adc_value = adc1_get_raw(ADC1_CHANNEL_4); //Se toma medicion de valor en canal 4
+    
     for (int j = 0; j < numeroMuestras; j++)
         muestras[j] = adc_value;
     
