@@ -1,6 +1,7 @@
 #include "uarts.h"
 
-// #include "modbus.h"
+//#include "modbus.h"
+
 
 static QueueHandle_t uart0_queue;
 #define tamBUFFER 1024
@@ -23,11 +24,13 @@ void TareaEventosUART0(void *Parametro)
             if (evento.type == UART_DATA)
             {
                 uart_read_bytes(UART_NUM_0, datoRX, evento.size, portMAX_DELAY);
-
+                
                 modbusSerial(datoRX, evento.size);
+
             }
         }
     }
+
 }
 
 //**************************************
@@ -45,8 +48,8 @@ void initUART0()
         .flow_ctrl = UART_HW_FLOWCTRL_DISABLE,
         //.source_clk = UART_SCLK_DEFAULT,
     };
-    //configUART0.baud_rate = 9600;
-
+    //configUART0.baud_rate=9600;
+    
     uart_param_config(UART_NUM_0, &configUART0);
     uart_set_pin(UART_NUM_0, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
     uart_driver_install(UART_NUM_0, tamBUFFER * 2, tamBUFFER * 2, 20, &uart0_queue, 0);

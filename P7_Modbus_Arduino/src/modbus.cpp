@@ -1,5 +1,5 @@
 #include "modbus.h"
-#include "init_coils.h"
+#include "coils.h"
 
 // uint8_t ByteArray[260]; // buffer de recepcion de los datos recibidos de los clientes
 UINT16_VAL MBHoldingRegister[maxHoldingRegister];

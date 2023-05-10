@@ -8,21 +8,23 @@ extern UINT16_VAL MBDiscreteInputs;
 
 void TareaEntradaDatos(void *Parametro)
 {
-     // Iteración valores ADCs
-
     uint32_t promedio1 = 0;
     uint32_t promedio2 = 0;
     uint32_t promedio3 = 0;
 
-    uint32_t adc_value1 = adc1_get_raw(ADC1_CHANNEL_0);
-    uint32_t adc_value2 = adc1_get_raw(ADC1_CHANNEL_3);
-    uint32_t adc_value3 = adc1_get_raw(ADC1_CHANNEL_6);
+    uint32_t adc_value1 = adc1_get_raw(CH1);
+    uint32_t adc_value2 = adc1_get_raw(CH2);
+    uint32_t adc_value3 = adc1_get_raw(CH3);
 
+    while (1)
+    {
+        // Iteración valores ADCs
         for (int j = 0; j < NumeroMuestras; j++)
         {
-            promedio1 += adc_value1 = adc1_get_raw(ADC1_CHANNEL_0);
-            promedio2 += adc_value2 = adc1_get_raw(ADC1_CHANNEL_1);
-            promedio3 += adc_value3 = adc1_get_raw(ADC1_CHANNEL_2);
+
+            promedio1 += adc_value1 = adc1_get_raw(CH1);
+            promedio2 += adc_value2 = adc1_get_raw(CH2);
+            promedio3 += adc_value3 = adc1_get_raw(CH3);
         }
         // Calculo Promedio de 100 muestras
         promedio1 /= NumeroMuestras;
@@ -37,7 +39,7 @@ void TareaEntradaDatos(void *Parametro)
         if (promedio3 > 4095)
             promedio3 = 4095;
 
-    // Escribo en el Input Register
+        // Escribo en el Imput Register
         MBInputRegister[0].Val = promedio1;
         MBInputRegister[1].Val = promedio2;
         MBInputRegister[2].Val = promedio3;
@@ -46,4 +48,5 @@ void TareaEntradaDatos(void *Parametro)
         // printf("valor adc3 suave: %d\n",promedio3);
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
 }
