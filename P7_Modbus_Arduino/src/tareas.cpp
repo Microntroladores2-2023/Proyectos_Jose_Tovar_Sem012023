@@ -1,6 +1,8 @@
 #include "modbus.h"
 #include "adcs.h"
 
+//Extern ya que fueron creados en modulo externo
+
 extern UINT16_VAL MBHoldingRegister[maxHoldingRegister];
 extern UINT16_VAL MBInputRegister[maxInputRegister];
 extern UINT16_VAL MBCoils;

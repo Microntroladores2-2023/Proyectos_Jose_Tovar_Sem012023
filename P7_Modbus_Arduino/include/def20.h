@@ -51,6 +51,14 @@ typedef union _WORD_VAL
 
 } UINT16_VAL;
 
+// +-----------------------------------------------------------+
+// |               32-Bit Value (Val member variable)          |
+//+-----------+-----------+-----------+-----------+------------+
+// | Byte Name |     UB    |     MB    |     HB    |     LB    |
+// +-----------+-----------+-----------+-----------+-----------+
+// | Bit Index | 31        | 23        | 15        | 7         |
+// +-----------+-----------+-----------+-----------+-----------+
+
 typedef union _DWORD_VAL
 {
     uint32_t Val;
@@ -78,8 +86,8 @@ typedef union _DWORD_VAL
         UINT8_VAL highLSB;
         UINT8_VAL highMSB;
     } byteUnion;
-    uint8_t v[4];
-    uint16_t w[2];
+    uint8_t v[4];  //Arreglo de 4 uint8, guarda 4 bytes por separado
+    uint16_t w[2]; //Arreglo de 2 uint16, guarda 2 words por separado
 } UINT32_VAL;
 
 typedef union _INT_VAL
