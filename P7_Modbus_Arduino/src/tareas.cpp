@@ -41,7 +41,7 @@ void TareaEntradaDatos(void *Parametro)
         if (promedio3 > 4095)
             promedio3 = 4095;
 
-        // Escribo en el Imput Register
+        // Escribo en el Input Register
         MBInputRegister[0].Val = promedio1;
         MBInputRegister[1].Val = promedio2;
         MBInputRegister[2].Val = promedio3;

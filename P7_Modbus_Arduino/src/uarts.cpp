@@ -25,6 +25,7 @@ void TareaEventosUART0(void *Parametro)
             {
                 uart_read_bytes(UART_NUM_0, datoRX, evento.size, portMAX_DELAY);
                 
+                //Llamo a la funcion Modbus y le paso los datos recibidos como entrada
                 modbusSerial(datoRX, evento.size);
 
             }

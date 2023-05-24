@@ -13,15 +13,17 @@ UINT16_VAL MBDiscreteInputs;
 
 void modbusSerial(uint8_t *ByteArray, uint16_t Length)
 {
-    uint8_t byteFN = ByteArray[MB_SER_FUNC]; // maquina de estado
+    uint8_t byteFN = ByteArray[MB_SER_FUNC]; //Guardo la funcion a realizar
     UINT16_VAL Start;
     UINT16_VAL WordDataLength;
 
     UINT16_VAL CRC;
 
+    //Cheque si el ByteArray en la posicion 0 corresponde al Slave ID
     if ((CRC16(ByteArray, Length) == 0) && (ByteArray[MB_SER_UID] == ID_RTU_LOCAL))
     {
-
+        
+        //Switch de la maquina de estado para las distintas funciones disponibles en Modbus
         switch (byteFN)
         {
         case MB_FC_NONE:
@@ -36,9 +38,11 @@ void modbusSerial(uint8_t *ByteArray, uint16_t Length)
 
             break;
 
-        case MB_FC_READ_REGISTERS: // 03 Read Holding Registers
+        case MB_FC_READ_REGISTERS: // Funcion 03: Read Holding Registers
 
-            // direccion de cominzo Modbus
+            //Primero voy guardando en posiciones sucesivas de datos la info necesaria
+
+            // direccion de comienzo Modbus
             Start.byte.HB = ByteArray[2];
             Start.byte.LB = ByteArray[3];
 
@@ -61,6 +65,8 @@ void modbusSerial(uint8_t *ByteArray, uint16_t Length)
             ByteArray[ByteArray[2] + 4] = (CRC.byte.HB);
 
             // rs485(ByteArray, ByteArray[2] + 5);
+
+            // uart_write_bytes(uart_port_t uart_num, const void* src, size_t size);
 
             uart_write_bytes(UART_NUM_0, (const char *)ByteArray, ByteArray[2] + 5);
 
@@ -96,39 +102,40 @@ void modbusSerial(uint8_t *ByteArray, uint16_t Length)
             break;
 
         case MB_FC_WRITE_COIL: // 05 Write COIL
+
             uart_write_bytes(UART_NUM_0, (const char *)ByteArray, 8);
 
-            // direccion de coil
-
+            // Guardando Direccion del Coil a Modificar
             Start.byte.HB = ByteArray[2];
             Start.byte.LB = ByteArray[3];
 
-            // Comando encender o apagar Coil
+            // Comando para encender o apagar Coil
+            // 0xFF 00 -> Encender
+            // 0x00 00 -> Apagar
 
             WordDataLength.byte.HB = ByteArray[4];
             WordDataLength.byte.LB = ByteArray[5];
 
-            // comprueba una dirección entre 0 y 15
-
+            // comprueba el Address correspondiente a cada Coil con los dos bytes de Start
             switch (Start.Val)
             {
-                // Dirección coil 0
+                // Dirección Coil 0
             case 0:
                 // Comprueba si comando es ON
                 if (WordDataLength.Val == 0xFF00)
                 {
-                    gpio_set_level(C0, 1);
+                    gpio_set_level(C0, 1); //Enciendo el coil
                     MBCoils.bits.b0 = 1;
                 }
                 // Si no comando OFF
                 else
                 {
-                    gpio_set_level(C0, 0);
+                    gpio_set_level(C0, 0); //Enciendo el coil
                     MBCoils.bits.b0 = 0;
                 }
                 break;
 
-                // Dirección coil 0
+                // Dirección Coil 1
 
             case 1:
                 if (WordDataLength.Val == 0xFF00)
