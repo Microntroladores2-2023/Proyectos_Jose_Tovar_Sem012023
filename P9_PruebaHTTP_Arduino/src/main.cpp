@@ -1,10 +1,10 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char* ssid = "JET Home";
-const char* password = "chemundo300665";
-const char* botToken = "5992410997:AAGNhUo8I5K-MnNsfuT3mrWa-RaVl4RFmd0";
-const char* chatId = "1467611816";
+const char* ssid = "ssid";
+const char* password = "pass";
+const char* botToken = "token";
+const char* chatId = "cahtid";
 
 const int buttonPin = 0;
 
