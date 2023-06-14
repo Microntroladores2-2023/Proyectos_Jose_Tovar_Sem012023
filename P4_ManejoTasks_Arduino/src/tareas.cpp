@@ -79,6 +79,7 @@ void Blink(void *pvParameters)
   while (true) //Loop infinito
   {
     ON = !ON;
+    printf("Hola mundo \n");
     gpio_set_level(LED_PIN, ON);
     vTaskDelay(tiempo_Led / portTICK_PERIOD_MS);
   }
