@@ -1,16 +1,19 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char* ssid = "ssid";
-const char* password = "pass";
-const char* botToken = "token";
-const char* chatId = "cahtid";
+const char* ssid = "JET Home";
+const char* password = "chemundo300665";
+const char* botToken = "5992410997:AAGNhUo8I5K-MnNsfuT3mrWa-RaVl4RFmd0";
+const char* chatId = "1467611816";
 
 const int buttonPin = 0;
+const int debounceDelay = 50; // Debounce delay in milliseconds
+
+TaskHandle_t telegramTaskHandle;
 
 void telegramTask(void *pvParameters) {
   while (1) {
-    vTaskSuspend(NULL); // Suspender la tarea hasta que se presione el botón
+    vTaskSuspend(NULL); // Suspender la tarea hasta que se reactive
 
     String message = "Hello, Telegram!";
     String url = "https://api.telegram.org/bot" + String(botToken) + "/sendMessage?chat_id=" + String(chatId) + "&text=" + message;
@@ -45,11 +48,23 @@ void setup() {
   }
   Serial.println("Connected to WiFi.");
 
-  xTaskCreate(telegramTask, "telegramTask", 4096, NULL, 1, NULL); // Crear tarea de FreeRTOS
+  xTaskCreate(telegramTask, "telegramTask", 4096, NULL, 1, &telegramTaskHandle); // Crear tarea de FreeRTOS
 }
 
 void loop() {
-  if (digitalRead(buttonPin) == LOW) {
-    vTaskResume(NULL); // Reanudar la tarea cuando se presione el botón
+  static unsigned long lastDebounceTime = 0;
+  static int lastButtonState = HIGH;
+  int buttonState = digitalRead(buttonPin);
+
+  // Detectar cambios en el estado del botón después del tiempo de debounce
+  if (buttonState != lastButtonState && (millis() - lastDebounceTime) > debounceDelay) {
+    lastDebounceTime = millis();
+
+    if (buttonState == LOW) {
+      Serial.println("Se va a reactivar la tarea.");
+      vTaskResume(telegramTaskHandle); // Reanudar la tarea cuando se presione el botón
+    }
   }
+
+  lastButtonState = buttonState;
 }
