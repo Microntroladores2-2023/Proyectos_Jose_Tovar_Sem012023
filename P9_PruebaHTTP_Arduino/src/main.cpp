@@ -1,15 +1,18 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <UniversalTelegramBot.h>
 
 const char* ssid = "JET Home";
 const char* password = "chemundo300665";
 const char* botToken = "5992410997:AAGNhUo8I5K-MnNsfuT3mrWa-RaVl4RFmd0";
 const char* chatId = "1467611816";
-
 const int buttonPin = 0;
-const int debounceDelay = 50; // Debounce delay in milliseconds
+const int debounceDelay = 50;
 
 TaskHandle_t telegramTaskHandle;
+
+WiFiClientSecure client;
+UniversalTelegramBot bot(botToken, client);
 
 void telegramTask(void *pvParameters) {
   while (1) {
@@ -49,6 +52,7 @@ void setup() {
   Serial.println("Connected to WiFi.");
 
   xTaskCreate(telegramTask, "telegramTask", 4096, NULL, 1, &telegramTaskHandle); // Crear tarea de FreeRTOS
+
 }
 
 void loop() {
@@ -61,10 +65,38 @@ void loop() {
     lastDebounceTime = millis();
 
     if (buttonState == LOW) {
-      Serial.println("Se va a reactivar la tarea.");
-      vTaskResume(telegramTaskHandle); // Reanudar la tarea cuando se presione el botón
+      Serial.println("Button pressed.");
+      bot.sendMessage(chatId, "Button pressed.");
     }
   }
 
   lastButtonState = buttonState;
+
+  // Leer y procesar los comandos del bot de Telegram
+  int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+
+  while (numNewMessages) {
+    Serial.println("New message received.");
+    for (int i = 0; i < numNewMessages; i++) {
+      String chatId = String(bot.messages[i].chat_id);
+      String text = bot.messages[i].text;
+
+      // Procesar el comando "/enable"
+      if (text == "/enable") {
+        Serial.println("Enabling button.");
+        vTaskResume(telegramTaskHandle);
+        bot.sendMessage(chatId, "Button enabled.");
+      }
+
+      // Procesar el comando "/disable"
+      if (text == "/disable") {
+        Serial.println("Disabling button.");
+        vTaskSuspend(telegramTaskHandle);
+        bot.sendMessage(chatId, "Button disabled.");
+      }
+    }
+    // Actualizar el mensaje recibido más reciente
+    bot.last_message_received = bot.messages[numNewMessages - 1].update_id + 1;
+    numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+  }
 }
