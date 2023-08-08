@@ -7,23 +7,16 @@ En esta carpeta encontrarás diferentes proyectos de microcontroladores que util
 
 Estos proyectos han sido creados con el objetivo de familiarizarse con el uso de la placa ESP32 y sus capacidades.
 
-Siéntete libre de explorar los diferentes proyectos y utilizar el código para tus propios proyectos. Si tienes alguna pregunta o sugerencia, no dudes en abrir un issue o contactar al autor del proyecto.
-
-¡Disfruta!
-
+Si tienes alguna pregunta o sugerencia, no dudes en abrir un issue o contactar al autor del proyecto.
 
 ## Temario de la asignatura
-
-What did you learn while building this project? What challenges did you face and how did you overcome them?
-
-
-## Uso/Ejemplos
-
-```javascript
-import Component from 'my-project'
-
-function App() {
-  return <Component />
-}
-```
+-Introdución a los RTOS.
+-Manejo de Tareas.
+-Uso del ADC.
+-Uso del UART.
+-Uso de Modbus RTU.
+-Uso de Modbus TCP/IP
+-Comunicacion HTTP
+-Comunicacion ESP-NOW
+-Comunicacion MQTT
 
